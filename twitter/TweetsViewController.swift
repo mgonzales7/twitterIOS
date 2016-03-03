@@ -27,6 +27,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         MBProgressHUD.showHUDAddedTo(self.view, animated: true)
         TwitterClient.sharedInstance.homeTimeline({ (tweets: [Tweet]) -> () in
             MBProgressHUD.hideHUDForView(self.view, animated: true)
+            print(tweets)
             self.tweets = tweets
             self.tableView.reloadData()
             
@@ -87,14 +88,45 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         
 
-    /*
+    @IBAction func picTouch(sender: AnyObject) {
+    performSegueWithIdentifier("userView", sender: sender)
+    }
+ 
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        
         // Get the new view controller using segue.destinationViewController.
+        if(segue.identifier=="detailView"){
+        let cell = sender as! UITableViewCell
+        let indexPath = tableView.indexPathForCell(cell)
+        let tweet = tweets![indexPath!.row]
+        let detailTweet = segue.destinationViewController as! TweetDetailViewController
+        detailTweet.tweet = tweet
+        }
+         if(segue.identifier=="userView"){
+            let button = sender as! UIButton
+            let view = button.superview!
+            let cell = view.superview as! TweetCell
+            
+            let indexPath = tableView.indexPathForCell(cell)
+            let tweet = tweets![indexPath!.row]
+            let user = tweet.user
+            
+            let userView = segue.destinationViewController as! UserViewController
+            userView.tweets = tweet
+            userView.user = user
+            
+        }
+        
+         
+        
+        
+        
+        
         // Pass the selected object to the new view controller.
     }
-    */
 
 }

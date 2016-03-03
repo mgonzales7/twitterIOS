@@ -59,6 +59,38 @@ class TwitterClient: BDBOAuth1SessionManager {
         }
     }
     
+    func compose(tweet: String, params: NSDictionary?, completion: (error: NSError?) -> () ){
+        POST("1.1/statuses/update.json?status=\(tweet)", parameters: params, success: { (operation: NSURLSessionDataTask!, response: AnyObject?) -> Void in
+            print("just tweeted \(tweet)!")
+            completion(error: nil)
+            }, failure: { (operation: NSURLSessionDataTask?, error: NSError!) -> Void in
+                completion(error: error)
+            }
+        )
+    }
+    
+    func retweet(id: Int, params: NSDictionary?, completion: (error: NSError?) -> () ){
+        POST("1.1/statuses/retweet/\(id).json", parameters: params, success: { (operation: NSURLSessionDataTask!, response: AnyObject?) -> Void in
+            print("retweeted tweet with id: \(id)")
+            completion(error: nil)
+            }, failure: { (operation: NSURLSessionDataTask?, error: NSError!) -> Void in
+                print("tweet not retweeted")
+                completion(error: error)
+            }
+        )
+    }
+    
+    func favorite(id: Int, params: NSDictionary?, completion: (error: NSError?) -> () ){
+        POST("1.1/favorites/create.json?id=\(id)", parameters: params, success: { (operation: NSURLSessionDataTask!, response: AnyObject?) -> Void in
+            print("favorited tweet with id: \(id)")
+            completion(error: nil)
+            }, failure: { (operation: NSURLSessionDataTask?, error: NSError!) -> Void in
+                print("tweet not favorited")
+                completion(error: error)
+            }
+        )
+    }
+    
     func logout() {
         User.currentUser = nil
         deauthorize()

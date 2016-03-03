@@ -11,8 +11,9 @@ import AFNetworking
 
 class TweetCell: UITableViewCell {
     
-    @IBOutlet weak var profileImage: UIImageView!
+    
 
+    @IBOutlet weak var heart: UIButton!
     @IBOutlet weak var screenNameText: UILabel!
     @IBOutlet weak var nameText: UILabel!
     
@@ -21,19 +22,22 @@ class TweetCell: UITableViewCell {
     @IBOutlet weak var favoriteCount: UILabel!
     @IBOutlet weak var retweetCount: UILabel!
     
+    @IBOutlet weak var profileImage: UIButton!
    
-    //var urlString: String?
+    var tweetID: String?
     
     var tweet: Tweet! {
         didSet
         {
+            tweetID = tweet.id
+            print("setting")
             nameText.text = tweet.user?.name as? String
             screenNameText.text = "@\(tweet.user!.screename! as String)"
             print(tweet.text)
             tweetText.text = tweet.text!
             let url = NSURL(string: tweet.user?.profileUrlString as! String)
             print (url)
-            profileImage.setImageWithURL(url!)
+            profileImage.setBackgroundImageForState(UIControlState.Normal, withURL: url!)
             favoriteCount.text = String(tweet.favoritesCount)
             retweetCount.text = String(tweet.retweetCount)
             
@@ -51,18 +55,32 @@ class TweetCell: UITableViewCell {
         tweetText.preferredMaxLayoutWidth = tweetText.frame.size.width
         // Initialization code
     }
-    @IBAction func retweet(sender: AnyObject) {
-        tweet.retweeted = true
-        tweet.retweetCount += 1
-        retweetCount.text = "\((tweet.retweetCount))"
-        reButton.enabled = false
-    }
+    
     
     @IBAction func favorite(sender: AnyObject) {
+        
+        TwitterClient.sharedInstance.favorite(Int(tweetID!)!, params: nil) { (error) -> () in
+            if self.tweet.favorited == false {
+                self.tweet.favorited = true
+                self.tweet.favoritesCount += 1
+                self.favoriteCount.text = "\((self.tweet.favoritesCount))"
+                
+                self.favButton.enabled = false
+
+                
+            } else {
+                self.tweet.favorited = false
+            }
+        }
+        
+        /*
+        
         tweet.favorited = true
         tweet.favoritesCount += 1
         favoriteCount.text = "\((tweet.favoritesCount))"
+       
         favButton.enabled = false
+*/
 
     }
 
@@ -71,5 +89,17 @@ class TweetCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-
+    @IBAction func retweet(sender: AnyObject) {
+        TwitterClient.sharedInstance.retweet(Int(tweetID!)!, params: nil) { (error) -> () in
+            if self.tweet.retweeted == false {
+                self.tweet.retweeted = true
+                self.reButton.enabled = false
+                self.tweet.retweetCount += 1
+            } else {
+                self.tweet.retweeted = false
+               
+            }
+        }
+    }
 }
+

@@ -13,6 +13,10 @@ class User: NSObject {
     var screename: NSString?
     var profileUrlString: NSString?
     var tagline: NSString?
+    var followers_count: Int?
+    var following_count: Int?
+    var coverPhotoUrl: String?
+    var tweets_count: Int?
     
     static let userDidLogoutNotification = "userDidLogout"
     var dictionary: NSDictionary?
@@ -24,6 +28,11 @@ class User: NSObject {
         
         profileUrlString = dictionary["profile_image_url"] as? String
         tagline = dictionary["description"] as? String
+        
+        followers_count = dictionary["followers_count"] as? Int
+        following_count = dictionary["friends_count"] as? Int
+        coverPhotoUrl = dictionary["profile_background_image_url"] as? String
+        tweets_count = dictionary["statuses_count"] as? Int
         
     }
     
